@@ -25,7 +25,7 @@ import { useParams, useRouter } from "next/navigation";
 
 interface ChatItemProps {
     id: string;
-    member: Member& {
+    member: Member & {
         profile: Profile
     };
     content: string;
@@ -61,7 +61,7 @@ export const ChatItem = ({
     socketUrl,
 }: ChatItemProps) => {
     const [isEditing, setIsEditing] = useState(false)
-    const {onOpen} = useModal()
+    const { onOpen } = useModal()
     const router = useRouter()
     const params = useParams()
 
@@ -78,29 +78,28 @@ export const ChatItem = ({
         }
 
         router.push(`/servers/${params?.serverId}/conversations/${member.id}`)
-
     }
 
     useEffect(() => {
-      form.reset({
-        content: content,
-      })
+        form.reset({
+            content: content,
+        })
     }, [content])
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-          if (event.key === "Escape" || event.keyCode === 27) {
-            setIsEditing(false);
-          }
+            if (event.key === "Escape" || event.keyCode === 27) {
+                setIsEditing(false);
+            }
         };
-      
+
         window.addEventListener("keydown", handleKeyDown);
-      
+
         return () => {
-          window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keydown", handleKeyDown);
         };
-      }, []);
-      
+    }, []);
+
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -119,11 +118,8 @@ export const ChatItem = ({
             console.log(error)
         }
     }
-    
-
 
     const fileType = fileUrl?.split('.').pop()
-
 
     const isAdmin = currentMember.role === MemberRole.ADMIN;
     const isModerator = currentMember.role === MemberRole.MODERATOR;
@@ -159,19 +155,19 @@ export const ChatItem = ({
                         </a>
                     )}
                     {isPdf && (
-                    <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-                        <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-                        <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline">
-                        {fileUrl}
-                        </a>
-                    </div>
+                        <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
+                            <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline">
+                                {fileUrl}
+                            </a>
+                        </div>
                     )}
                     {!fileUrl && !isEditing && (
                         <p className={cn(
                             'text-sm text-zinc-600 dark:text-zinc-300',
                             deleted && 'italic text-zinc-500 dark:text-zinc-400 text-xs mt-1'
                         )}>
-                            {content}
+                            {content.replace(/'/g, "&apos;")}
                             {
                                 isUpdated && !deleted && (
                                     <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
@@ -183,7 +179,7 @@ export const ChatItem = ({
                     )}
                     {!fileUrl && isEditing && (
                         <Form {...form}>
-                            <form className="flex items-center w-full gap-x-2 pt-2 " onSubmit={form.handleSubmit(onSubmit)}>
+                            <form className="flex items-center w-full gap-x-2 pt-2" onSubmit={form.handleSubmit(onSubmit)}>
                                 <FormField
                                     control={form.control}
                                     name='content'
@@ -193,21 +189,21 @@ export const ChatItem = ({
                                                 <div className="relative w-full">
                                                     <Input
                                                         disabled={isLoading}
-                                                        className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 "
+                                                        className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                                                         placeholder="Edited Message"
                                                         {...field}
-                                                     />
+                                                    />
                                                 </div>
                                             </FormControl>
                                         </FormItem>
                                     )}
-                                 />
-                                 <Button disabled={isLoading} size='sm' variant='primary'>
+                                />
+                                <Button disabled={isLoading} size='sm' variant='primary'>
                                     Save
-                                 </Button>
+                                </Button>
                             </form>
                             <span className="text-[10px] mt-1 text-zinc-400">
-                                    Presss escape to cancel, enter to save.
+                                Press escape to cancel, enter to save.
                             </span>
                         </Form>
                     )}
@@ -220,18 +216,18 @@ export const ChatItem = ({
                             <Edit
                                 onClick={() => setIsEditing(true)}
                                 className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
-                             />
+                            />
                         </ActionTooltip>
                     )}
-                        <ActionTooltip label='Delete'>
-                            <Trash
-                                onClick={() => onOpen('deleteMessage', {
-                                    apiUrl: `${socketUrl}/${id}`,
-                                    query: socketQuery
-                                })}
-                                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
-                             />
-                        </ActionTooltip>
+                    <ActionTooltip label='Delete'>
+                        <Trash
+                            onClick={() => onOpen('deleteMessage', {
+                                apiUrl: `${socketUrl}/${id}`,
+                                query: socketQuery
+                            })}
+                            className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
+                        />
+                    </ActionTooltip>
                 </div>
             )}
         </div>
